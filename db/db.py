@@ -1,10 +1,10 @@
 import sqlite3
 from essence import User, Reminder
 
+
 class Database:
     SCHEMA = "db/schema.sql"
     DATABASE = "db/reminder.db"
-
 
     @staticmethod
     def execute(sql, params=()):
@@ -16,7 +16,6 @@ class Database:
 
         connection.commit()
 
-
     @staticmethod
     def create_table():
         with open(Database.SCHEMA) as schema_file:
@@ -25,7 +24,6 @@ class Database:
             cursor.executescript(schema_file.read())
             connection.commit()
             connection.close()
-
 
     @staticmethod
     def add_user(user: User):
@@ -38,8 +36,7 @@ class Database:
         )
         return True
 
-
-    @staticmethod 
+    @staticmethod
     def get_all_users():
         connection = sqlite3.connect(Database.DATABASE)
 
@@ -55,8 +52,8 @@ class Database:
         if len(users) == 0:
             return None
         return users
-    
-    @staticmethod 
+
+    @staticmethod
     def get_user_by_telegram_id(telegram_id):
         connection = sqlite3.connect(Database.DATABASE)
 
@@ -72,9 +69,8 @@ class Database:
         if len(users) == 0:
             return None
         return user
-    
 
-    @staticmethod 
+    @staticmethod
     def get_user_by_user_name(user_name):
         connection = sqlite3.connect(Database.DATABASE)
 
@@ -90,7 +86,6 @@ class Database:
         if len(users) == 0:
             return None
         return user
-    
 
     @staticmethod
     def add_reminder(reminder: Reminder):
@@ -99,15 +94,13 @@ class Database:
             [
                 reminder.user_name,
                 reminder.day_reminder,
-                reminder.time_reminder, 
-                reminder.text_reminder
+                reminder.time_reminder,
+                reminder.text_reminder,
             ],
         )
         return True
 
-
-
-    @staticmethod 
+    @staticmethod
     def get_all_reminder():
         connection = sqlite3.connect(Database.DATABASE)
 
@@ -117,35 +110,43 @@ class Database:
 
         all_reminders = cursor.fetchall()
         reminders = []
-        for id, user_name, day_reminder,  time_reminder, text_reminder in all_reminders:
-            reminder = Reminder(user_name, day_reminder, time_reminder, text_reminder, id)
+        for id, user_name, day_reminder, time_reminder, text_reminder in all_reminders:
+            reminder = Reminder(
+                user_name, day_reminder, time_reminder, text_reminder, id
+            )
             reminders.append(reminder)
         if len(reminders) == 0:
             return None
         return reminders
-    
 
-    @staticmethod 
+    @staticmethod
     def get_reminders_by_user_name_and_day(user_name, day_reminder):
         connection = sqlite3.connect(Database.DATABASE)
 
         cursor = connection.cursor()
 
-        cursor.execute("SELECT * FROM reminders WHERE user_name=? AND day_reminder=?", [user_name, day_reminder])
+        cursor.execute(
+            "SELECT * FROM reminders WHERE user_name=? AND day_reminder=?",
+            [user_name, day_reminder],
+        )
 
         all_reminders = cursor.fetchall()
         reminders = []
-        for id, user_name, day_reminder,  time_reminder, text_reminder in all_reminders:
-            reminder = Reminder(user_name, day_reminder, time_reminder, text_reminder, id)
+        for id, user_name, day_reminder, time_reminder, text_reminder in all_reminders:
+            reminder = Reminder(
+                user_name, day_reminder, time_reminder, text_reminder, id
+            )
             reminders.append(reminder)
         if len(reminders) == 0:
             return None
         return reminders
-    
-    
+
     @staticmethod
-    def delete_reminder_by_user_name_day_time_reminder(user_name, day_reminder, time_reminder):
-        Database.execute("""DELETE FROM reminders WHERE user_name=? AND day_reminder=? AND time_reminder=?""",
-                          [user_name, day_reminder, time_reminder])
+    def delete_reminder_by_user_name_day_time_reminder(
+        user_name, day_reminder, time_reminder
+    ):
+        Database.execute(
+            """DELETE FROM reminders WHERE user_name=? AND day_reminder=? AND time_reminder=?""",
+            [user_name, day_reminder, time_reminder],
+        )
         return True
-    
