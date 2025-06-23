@@ -71,7 +71,7 @@ class Database:
             users.append(user)
         if len(users) == 0:
             return None
-        return users
+        return user
     
 
     @staticmethod 
@@ -89,8 +89,23 @@ class Database:
             users.append(user)
         if len(users) == 0:
             return None
-        return users
+        return user
     
+
+    @staticmethod
+    def add_reminder(reminder: Reminder):
+        Database.execute(
+            "INSERT INTO reminders (user_name, day_reminder, time_reminder, text_reminder) VALUES (?, ?, ?, ?)",
+            [
+                reminder.user_name,
+                reminder.day_reminder,
+                reminder.time_reminder, 
+                reminder.text_reminder
+            ],
+        )
+        return True
+
+
 
     @staticmethod 
     def get_all_reminder():
@@ -102,8 +117,35 @@ class Database:
 
         all_reminders = cursor.fetchall()
         reminders = []
-        for id, user_name, telegram_user_id in all_reminders:
-            reminder = User(user_name, telegram_user_id, id)
+        for id, user_name, day_reminder,  time_reminder, text_reminder in all_reminders:
+            reminder = Reminder(user_name, day_reminder, time_reminder, text_reminder, id)
             reminders.append(reminder)
         if len(reminders) == 0:
             return None
+        return reminders
+    
+
+    @staticmethod 
+    def get_reminders_by_day(day_reminder):
+        connection = sqlite3.connect(Database.DATABASE)
+
+        cursor = connection.cursor()
+
+        cursor.execute("SELECT * FROM reminders WHERE day_reminder=?", [day_reminder])
+
+        all_reminders = cursor.fetchall()
+        reminders = []
+        for id, user_name, day_reminder,  time_reminder, text_reminder in all_reminders:
+            reminder = User(user_name, day_reminder, time_reminder, text_reminder, id)
+            reminders.append(reminder)
+        if len(reminders) == 0:
+            return None
+        return reminders
+    
+    
+    @staticmethod
+    def delete_reminder_by_user_name_day_time_reminder(user_name, day_reminder, time_reminder):
+        Database.execute("""DELETE FROM reminder WHERE user_name=? AND day_reminder=? AND time_reminder=?""",
+                          [user_name, day_reminder, time_reminder])
+        return True
+    
