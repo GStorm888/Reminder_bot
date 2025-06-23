@@ -126,17 +126,17 @@ class Database:
     
 
     @staticmethod 
-    def get_reminders_by_day(day_reminder):
+    def get_reminders_by_user_name_and_day(user_name, day_reminder):
         connection = sqlite3.connect(Database.DATABASE)
 
         cursor = connection.cursor()
 
-        cursor.execute("SELECT * FROM reminders WHERE day_reminder=?", [day_reminder])
+        cursor.execute("SELECT * FROM reminders WHERE user_name=? AND day_reminder=?", [user_name, day_reminder])
 
         all_reminders = cursor.fetchall()
         reminders = []
         for id, user_name, day_reminder,  time_reminder, text_reminder in all_reminders:
-            reminder = User(user_name, day_reminder, time_reminder, text_reminder, id)
+            reminder = Reminder(user_name, day_reminder, time_reminder, text_reminder, id)
             reminders.append(reminder)
         if len(reminders) == 0:
             return None
@@ -145,7 +145,7 @@ class Database:
     
     @staticmethod
     def delete_reminder_by_user_name_day_time_reminder(user_name, day_reminder, time_reminder):
-        Database.execute("""DELETE FROM reminder WHERE user_name=? AND day_reminder=? AND time_reminder=?""",
+        Database.execute("""DELETE FROM reminders WHERE user_name=? AND day_reminder=? AND time_reminder=?""",
                           [user_name, day_reminder, time_reminder])
         return True
     
